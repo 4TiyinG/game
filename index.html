@@ -42,7 +42,7 @@
 <link rel="prefetch" as="image" href="https://threejs.org/examples/textures/waternormals.jpg">
 
 <!-- 主武器模型：非关键路径，使用 prefetch -->
-<link rel="prefetch" as="fetch" href="ak-12.glb" crossorigin="anonymous">
+<link rel="prefetch" as="fetch" href="https://cdn.jsdelivr.net/gh/4TiyinG/45@main/ak-12.glb" crossorigin="anonymous">
 
 <!-- 其他装饰模型：保持 prefetch 无影响 -->
 <link rel="prefetch" as="fetch" href="https://cdn.jsdelivr.net/gh/4TiyinG/45@main/Soldier.glb" crossorigin="anonymous">
@@ -424,7 +424,7 @@
     runWhenReady(() => {
         if ('serviceWorker' in navigator && !window._swRegistered) {
             window._swRegistered = true;
-            const swCode = `const CACHE_NAME='ak12_cache_v6';const urlsToCache=['/','/style.css','/13.js','/a1.js','/a2.js','/a3.js','/a4.js','/a5.js','/a游戏.js','https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js','https://unpkg.com/comlink@4.4.1/dist/umd/comlink.min.js','https://image2url.com/r2/bucket1/images/1767924501264-882d54aa-2ff0-4d62-9a9a-a352455d8fba.jpg','https://image2url.com/r2/bucket2/images/1766739894913-d6018d51-9e56-4a5e-8c55-ae182f792e65.jpg','https://threejs.org/examples/textures/waternormals.jpg','/downloads/ak-12.glb','https://cdn.jsdelivr.net/gh/4TiyinG/45@main/Soldier.glb','https://cdn.jsdelivr.net/gh/4TiyinG/45@main/deng.glb','https://cdn.jsdelivr.net/gh/4TiyinG/45@main/hachune-miku-doll.glb','https://cdn.jsdelivr.net/gh/4TiyinG/45@main/guitar.glb'];self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(urlsToCache))));self.skipWaiting();self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));self.addEventListener('activate',e=>e.waitUntil(clients.claim()));`;
+            const swCode = `const CACHE_NAME='ak12_cache_v6';const urlsToCache=['/','/style.css','/13.js','/a1.js','/a2.js','/a3.js','/a4.js','/a5.js','/a游戏.js','https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js','https://unpkg.com/comlink@4.4.1/dist/umd/comlink.min.js','https://image2url.com/r2/bucket1/images/1767924501264-882d54aa-2ff0-4d62-9a9a-a352455d8fba.jpg','https://image2url.com/r2/bucket2/images/1766739894913-d6018d51-9e56-4a5e-8c55-ae182f792e65.jpg','https://threejs.org/examples/textures/waternormals.jpg','https://cdn.jsdelivr.net/gh/4TiyinG/45@main/ak-12.glb','https://cdn.jsdelivr.net/gh/4TiyinG/45@main/Soldier.glb','https://cdn.jsdelivr.net/gh/4TiyinG/45@main/deng.glb','https://cdn.jsdelivr.net/gh/4TiyinG/45@main/hachune-miku-doll.glb','https://cdn.jsdelivr.net/gh/4TiyinG/45@main/guitar.glb'];self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(urlsToCache))));self.skipWaiting();self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));self.addEventListener('activate',e=>e.waitUntil(clients.claim()));`;
             const blob = new Blob([swCode], { type: 'application/javascript' });
             const swUrl = URL.createObjectURL(blob);
             requestIdleCallback(() => {

@@ -365,7 +365,7 @@ window.GameScene = (function() {
 
         // 武器模型（动态）
         let gunModel=null,mixer=null,animations={},muzzleLocal=new THREE.Vector3(0,0,0.5);
-        new THREE.GLTFLoader().load('ak-12.glb', gltf=>{
+        new THREE.GLTFLoader().load('https://cdn.jsdelivr.net/gh/4TiyinG/45@main/ak-12.glb', gltf=>{
             gunModel=gltf.scene; const box=new THREE.Box3().setFromObject(gunModel); gunModel.position.sub(box.getCenter(new THREE.Vector3()));
             gunModel.traverse(c=>{ if(c.isMesh){ c.castShadow=false; c.receiveShadow=false; c.frustumCulled=false; if(c.material) c.material.side=THREE.DoubleSide; } });
             camera.add(gunModel); scene.add(camera);
