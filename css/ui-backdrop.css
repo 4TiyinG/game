@@ -1,0 +1,79 @@
+/* ============================================================ */
+/* ui-backdrop.css - Startup Backdrop Visual Effects             */
+/* ============================================================ */
+
+#startup-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse at 30% 40%, #0b1428 0%, #050810 70%, #000000 100%),
+        radial-gradient(ellipse at 75% 15%, rgba(79,140,255,0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 15% 85%, rgba(167,139,250,0.03) 0%, transparent 50%);
+    animation: backdropBreathe 6s ease-in-out infinite alternate;
+    will-change: opacity;
+    transition: opacity 0.8s var(--ease-out);
+}
+
+/* ===== Hidden state — smooth fade out, 完全停止动画 ===== */
+#startup-backdrop.hidden {
+    opacity: 0;
+    animation: none;
+    will-change: auto;
+    transition: opacity 0.8s var(--ease-out);
+    pointer-events: none;
+    display: none;
+}
+
+/* ===== Breathing animation ===== */
+@keyframes backdropBreathe {
+    0% {
+        filter: brightness(0.9) hue-rotate(-3deg);
+    }
+    100% {
+        filter: brightness(1.1) hue-rotate(6deg);
+    }
+}
+
+/* ===== Flood Light from Top-Left (::before only, no ::after) ===== */
+#startup-backdrop::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transform-origin: 0% 0%;
+    transform: scale(0);
+    will-change: transform, opacity;
+    filter: blur(14px) brightness(1.15);
+    background:
+        radial-gradient(circle at 0% 0%,
+            rgba(0,255,255,0.55) 0%,
+            rgba(100,0,255,0.3) 25%,
+            rgba(255,0,128,0.1) 50%,
+            transparent 75%),
+        radial-gradient(circle at 8% 12%,
+            rgba(180,0,255,0.2) 0%,
+            rgba(255,100,200,0.06) 45%,
+            transparent 65%),
+        conic-gradient(from 10deg at 0% 0%,
+            rgba(255,255,255,0.28) 0%,
+            transparent 12%,
+            transparent 88%,
+            rgba(255,255,255,0.1) 100%);
+    animation: backdropFloodLight 2s var(--ease-out) forwards;
+}
+
+@keyframes backdropFloodLight {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    15% {
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(8);
+        opacity: 1;
+    }
+}

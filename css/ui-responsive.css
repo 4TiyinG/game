@@ -1,0 +1,534 @@
+/* ============================================================ */
+/* ui-responsive.css - Responsive Overrides (Landscape & Special) */
+/* Portrait is the default — handled by component CSS files      */
+/* This file loads LAST, so all overrides take precedence.       */
+/* ============================================================ */
+
+/* ============================================================
+   Portrait — Default
+   Base styles are defined in ui-header / ui-footer / ui-joystick
+   / ui-actions / ui-settings / ui-base. No overrides needed here.
+   ============================================================ */
+
+/* ============================================================
+   LANDSCAPE — Primary target: Mobile game HUD
+   Design rules:
+   - Footer fills space between joystick and action panel
+   - Toggle buttons: icon-only, 26px compact
+   - Action panel: 2×2 grid, right edge
+   - Header: file-wrapper hidden, load button only
+   - Settings card: centered modal, max-width 320px
+   - No element overflows screen edges
+   ============================================================ */
+@media (orientation: landscape) {
+
+    /* ===== Header: Ultra-compact, left-aligned ===== */
+    .ui-header {
+        top: calc(4px + var(--safe-t));
+        left: calc(4px + var(--safe-l));
+        right: auto;
+        transform: none;
+        max-width: calc(100vw - 8px - var(--safe-l) - var(--safe-r));
+        padding: 3px 4px;
+        border-radius: 8px;
+        gap: 4px;
+    }
+
+    /* Hide file selector, keep only load button */
+    .file-wrapper { display: none; }
+    .file-label { display: none; }
+
+    .load-btn {
+        font-size: 9px;
+        padding: 2px 10px;
+        min-height: 26px;
+        border-radius: var(--pill);
+        gap: 3px;
+        box-shadow: 0 2px 8px var(--accent-glow);
+    }
+    .load-btn svg { width: 10px; height: 10px; }
+
+    /* ===== Footer: Horizontal HUD bar — centered, scrollable ===== */
+    .ui-footer {
+        bottom: calc(4px + var(--safe-b));
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        width: auto;
+        max-width: min(calc(100vw - 220px - var(--safe-l) - var(--safe-r)), 100vw);
+        padding: 3px 4px;
+        border-radius: 8px;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 3px;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background: rgba(8,12,18,0.82);
+        overflow: hidden;
+    }
+
+    /* Top row: inline status, no divider */
+    .footer-row-top {
+        padding-bottom: 0;
+        margin-bottom: 0;
+        border-bottom: none;
+        gap: 3px;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    /* Bottom row: scrollable toggle buttons */
+    .footer-row-bottom {
+        display: flex;
+        gap: 3px;
+        flex-shrink: 1;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        scroll-behavior: smooth;
+        padding: 1px 0;
+    }
+    .footer-row-bottom::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Status indicators — minimal in landscape */
+    .play-status { width: 6px; height: 6px; flex-shrink: 0; }
+    .play-status .icon-svg { width: 6px; height: 6px; }
+    .animation-status { display: none; }
+
+    /* ===== Toggle Buttons: Icon-only, 24px compact ===== */
+    .toggle-btn {
+        font-size: 0;
+        padding: 0;
+        min-height: 24px;
+        min-width: 24px;
+        width: 24px;
+        height: 24px;
+        gap: 0;
+        flex: none;
+        border-radius: 5px;
+    }
+    .toggle-btn span { display: none; }
+    .toggle-btn svg { width: 12px; height: 12px; }
+
+    /* ===== Anim Picker: Compact trigger ===== */
+    .anim-picker-wrapper {
+        width: auto;
+        min-width: 0;
+        max-width: 80px;
+        flex-shrink: 1;
+    }
+    .anim-picker-trigger {
+        font-size: 8px;
+        padding: 0 5px;
+        min-height: 24px;
+        gap: 2px;
+        border-radius: 5px;
+        max-width: 70px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .anim-picker-trigger span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 42px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    .anim-picker-trigger .picker-arrow { width: 6px; height: 6px; }
+    .anim-picker-dropdown {
+        width: 88px;
+        border-radius: 8px;
+        bottom: calc(100% + 4px);
+    }
+    .anim-picker-dropdown li {
+        font-size: 9px;
+        padding: 4px 8px;
+        min-height: 24px;
+    }
+
+    /* ===== Joystick: Bottom-left ===== */
+    .joystick-container {
+        bottom: calc(10px + var(--safe-b));
+        left: calc(10px + var(--safe-l));
+    }
+    #joystick-zone { width: 60px; height: 60px; }
+
+    .joystick-settings-btn {
+        width: 28px; height: 28px;
+        min-width: 28px; min-height: 28px;
+        margin-left: 5px;
+    }
+    .joystick-settings-btn .icon-svg { width: 12px; height: 12px; }
+
+    /* ===== Action Buttons: 2×2 grid — right edge ===== */
+    .action-panel {
+        top: 50%;
+        right: calc(8px + var(--safe-r));
+        transform: translateY(-50%);
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+    }
+
+    .action-btn {
+        width: 36px; height: 36px;
+        min-width: 36px; min-height: 36px;
+        border-radius: 10px;
+        background: rgba(8,12,18,0.75);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.35);
+    }
+
+    .action-btn .label {
+        font-size: 0;
+        margin-top: 0;
+        display: none;
+    }
+
+    .action-btn svg { width: 18px; height: 18px; }
+
+    /* ===== Control Buttons: Compact top-right ===== */
+    #control-buttons {
+        top: calc(4px + var(--safe-t));
+        right: calc(4px + var(--safe-r));
+        gap: 4px;
+    }
+
+    #control-buttons button {
+        width: 26px; height: 26px;
+        min-width: 26px; min-height: 26px;
+    }
+    #control-buttons button .icon-svg { width: 13px; height: 13px; }
+    #layout-toggle-btn .icon-svg { width: 12px; height: 12px; }
+
+    /* ===== Settings Panel: Centered modal ===== */
+    .settings-overlay {
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+
+    .settings-card {
+        width: 100%;
+        max-width: min(320px, calc(100vw - 32px));
+        border-radius: 16px;
+        padding: 14px 16px;
+        max-height: 78vh;
+        /* 横屏用缩放代替上滑 */
+        transform: scale(0.9);
+    }
+
+    .settings-overlay.open .settings-card {
+        transform: scale(1);
+    }
+
+    .settings-header {
+        font-size: 13px;
+        margin-bottom: 12px;
+    }
+    .settings-header .settings-title { gap: 6px; }
+
+    .settings-close {
+        width: 28px; height: 28px;
+        min-width: 28px; min-height: 28px;
+        font-size: 20px;
+    }
+
+    .dir-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 3px;
+        margin-bottom: 8px;
+    }
+
+    .dir-chip {
+        padding: 4px 2px;
+        font-size: 8px;
+        border-radius: 6px;
+        gap: 1px;
+        min-height: 26px;
+    }
+    .dir-chip svg { width: 10px; height: 10px; }
+}
+
+/* ============================================================
+   Very small landscape — max-height 380px (old phones)
+   Even more compact: smaller buttons, tighter spacing
+   ============================================================ */
+@media (orientation: landscape) and (max-height: 380px) {
+
+    .ui-footer {
+        max-width: min(calc(100vw - 180px - var(--safe-l) - var(--safe-r)), 100vw);
+        padding: 2px 3px;
+        gap: 2px;
+    }
+
+    .toggle-btn {
+        min-height: 22px;
+        min-width: 22px;
+        width: 22px;
+        height: 22px;
+    }
+    .toggle-btn svg { width: 11px; height: 11px; }
+
+    .anim-picker-trigger {
+        min-height: 22px;
+        font-size: 7px;
+        padding: 0 4px;
+    }
+    .anim-picker-trigger span { max-width: 36px; }
+
+    #joystick-zone { width: 54px; height: 54px; }
+    .joystick-settings-btn {
+        width: 24px; height: 24px;
+        min-width: 24px; min-height: 24px;
+    }
+
+    .action-btn {
+        width: 32px; height: 32px;
+        min-width: 32px; min-height: 32px;
+    }
+    .action-btn svg { width: 16px; height: 16px; }
+
+    #control-buttons button {
+        width: 24px; height: 24px;
+        min-width: 24px; min-height: 24px;
+    }
+
+    .load-btn {
+        font-size: 8px;
+        padding: 1px 6px;
+        min-height: 24px;
+    }
+}
+
+/* ============================================================
+   Small Phones portrait — max-width 400px
+   Tighter spacing, slightly smaller action buttons
+   ============================================================ */
+@media (max-width: 400px) and (orientation: portrait) {
+
+    /* Settings: reduced padding */
+    .settings-card {
+        padding: 14px 14px calc(10px + var(--safe-b));
+        max-height: 72vh;
+    }
+    .settings-header {
+        font-size: 13px;
+        margin-bottom: 12px;
+    }
+
+    /* Header: more compact */
+    .ui-header {
+        padding: 3px 8px 3px 10px;
+        max-width: 94%;
+    }
+    .file-label {
+        font-size: 9px;
+        max-width: 40px;
+    }
+    .load-btn {
+        font-size: 9px;
+        padding: 2px 8px;
+        min-height: 24px;
+    }
+
+    /* Footer: more compact */
+    .ui-footer {
+        width: 46%;
+        max-width: 160px;
+        padding: 4px 5px;
+    }
+    .anim-picker-trigger {
+        font-size: 8px;
+        padding: 0 5px;
+        min-height: 24px;
+        max-width: 64px;
+    }
+    .anim-picker-trigger span { max-width: 36px; }
+    .toggle-btn {
+        font-size: 8px;
+        padding: 1px 2px;
+        min-height: 26px;
+    }
+
+    /* Action buttons: smaller */
+    .action-btn {
+        width: 38px; height: 38px;
+        min-width: 38px; min-height: 38px;
+    }
+    .action-btn svg { width: 16px; height: 16px; }
+    .action-btn .label { font-size: 7px; }
+
+    /* Control buttons: smaller */
+    #control-buttons button {
+        width: 28px; height: 28px;
+        min-width: 28px; min-height: 28px;
+    }
+    #control-buttons button .icon-svg { width: 14px; height: 14px; }
+
+    /* Joystick: smaller */
+    #joystick-zone {
+        width: 56px; height: 56px;
+    }
+}
+
+/* ============================================================
+   Medium phones — 401px to 767px portrait
+   Covers iPhone Plus/Pro Max, Android large phones
+   ============================================================ */
+@media (min-width: 401px) and (max-width: 767px) and (orientation: portrait) {
+
+    /* Footer: compact */
+    .ui-footer {
+        width: 44%;
+        max-width: 180px;
+    }
+
+    /* Header: ensure not too wide */
+    .ui-header {
+        max-width: min(calc(100vw - 20px), 340px);
+    }
+
+    /* Action buttons: moderate */
+    .action-btn {
+        width: 42px; height: 42px;
+        min-width: 42px; min-height: 42px;
+    }
+}
+
+/* ============================================================
+   Tablets — min-width 768px (both orientations)
+   Larger touch targets, larger fonts, more spacing
+   ============================================================ */
+@media (min-width: 768px) {
+
+    /* Settings: wider card */
+    .settings-card {
+        width: min(440px, calc(100vw - 40px));
+        max-width: min(440px, calc(100vw - 40px));
+        border-radius: 24px;
+        padding: 24px 28px;
+        max-height: 80vh;
+    }
+    .settings-header {
+        font-size: 17px;
+        margin-bottom: 20px;
+    }
+
+    /* Header: larger */
+    .ui-header {
+        padding: 6px 18px 6px 20px;
+        max-width: 88%;
+    }
+    .file-label {
+        font-size: 12px;
+        max-width: 90px;
+    }
+    .load-btn {
+        font-size: 12px;
+        padding: 4px 16px;
+        min-height: 30px;
+        gap: 6px;
+    }
+    .load-btn svg { width: 14px; height: 14px; }
+
+    /* Footer: larger (portrait only — landscape keeps left/right) */
+    .anim-picker-trigger {
+        font-size: 10px;
+        padding: 0 10px;
+        min-height: 30px;
+    }
+    .anim-picker-dropdown li {
+        font-size: 11px;
+        padding: 6px 12px;
+        min-height: 32px;
+    }
+
+    /* Toggle buttons: larger font */
+    .toggle-btn {
+        font-size: 10px;
+        padding: 4px 10px;
+        min-height: 32px;
+    }
+    .toggle-btn svg { width: 14px; height: 14px; }
+
+    /* Joystick: 80px */
+    #joystick-zone {
+        width: 80px; height: 80px;
+    }
+    .joystick-settings-btn {
+        width: 36px; height: 36px;
+        min-width: 36px; min-height: 36px;
+    }
+    .joystick-settings-btn .icon-svg { width: 16px; height: 16px; }
+
+    /* Action buttons: 54px, larger gap */
+    .action-panel { gap: 12px; }
+    .action-btn {
+        width: 54px; height: 54px;
+        min-width: 54px; min-height: 54px;
+        border-radius: 16px;
+    }
+    .action-btn .label { font-size: 10px; }
+    .action-btn svg { width: 22px; height: 22px; }
+
+    /* Control buttons: larger */
+    #control-buttons { gap: 8px; }
+    #control-buttons button {
+        width: 40px; height: 40px;
+        min-width: 40px; min-height: 40px;
+    }
+    #control-buttons button .icon-svg { width: 18px; height: 18px; }
+    #layout-toggle-btn .icon-svg { width: 16px; height: 16px; }
+
+    /* Direction chips: larger on tablet */
+    .dir-grid { gap: 6px; }
+    .dir-chip {
+        padding: 8px 4px;
+        font-size: 11px;
+        min-height: 36px;
+    }
+    .dir-chip svg { width: 14px; height: 14px; }
+}
+
+/* ============================================================
+   Tablet landscape — override footer to use left/right fill
+   (tablet portrait keeps default right-bottom card)
+   ============================================================ */
+@media (min-width: 768px) and (orientation: landscape) {
+
+    .ui-footer {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        width: auto;
+        max-width: calc(100vw - 300px - var(--safe-l) - var(--safe-r));
+        padding: 4px 8px;
+    }
+
+    /* Restore toggle to icon-only in tablet landscape */
+    .toggle-btn {
+        font-size: 0;
+        padding: 0;
+        min-height: 30px;
+        min-width: 30px;
+        width: 30px;
+        height: 30px;
+    }
+    .toggle-btn span { display: none; }
+    .toggle-btn svg { width: 15px; height: 15px; }
+
+    .anim-picker-trigger {
+        font-size: 10px;
+        min-height: 30px;
+        max-width: 100px;
+    }
+    .anim-picker-trigger span { max-width: 64px; }
+}

@@ -1,0 +1,277 @@
+/* ============================================================ */
+/* ui-footer.css - Bottom Control Panel (Game HUD)              */
+/* Portrait: Bottom-right glassmorphism card with               */
+/*           status, animation picker, and toggle grid          */
+/* ============================================================ */
+
+/* ===== Footer Container ===== */
+.ui-footer {
+    position: absolute;
+    bottom: calc(10px + var(--safe-b));
+    right: 10px;
+    width: 42%;
+    max-width: min(200px, 42vw);
+    background: var(--bg-glass);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: 1px solid var(--border-h);
+    border-radius: var(--card);
+    padding: 6px 6px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    color: var(--text-1);
+    box-shadow: var(--shadow-lg), var(--shadow-inset);
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* ===== Top Row: Status + Animation Picker ===== */
+.footer-row-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+}
+
+.status-area {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Play/Pause status icon */
+.play-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: var(--green);
+}
+
+.play-status .icon-svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Animation status text */
+.animation-status {
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 0 8px var(--green-glow);
+    letter-spacing: 0.2px;
+}
+
+/* ===== Animation Picker ===== */
+.anim-picker-wrapper {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    z-index: 20;
+}
+
+.anim-picker-trigger {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--bg-hover);
+    border: 1px solid var(--border);
+    color: var(--text-1);
+    padding: 0 8px;
+    border-radius: var(--pill);
+    font-size: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    min-height: 34px;
+    touch-action: manipulation;
+    max-width: 84px;
+    overflow: hidden;
+    transition: background var(--ease), border-color var(--ease), transform var(--ease);
+}
+
+.anim-picker-trigger span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 50px;
+    display: inline-block;
+}
+
+.anim-picker-trigger .picker-arrow {
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+    color: var(--text-2);
+    transition: transform var(--ease);
+}
+
+.anim-picker-trigger:hover {
+    background: var(--bg-active);
+    border-color: var(--border-h);
+}
+
+.anim-picker-trigger:active {
+    transform: scale(0.95);
+    background: var(--bg-active);
+}
+
+.anim-picker-wrapper.open .anim-picker-trigger {
+    background: var(--accent-soft);
+    border-color: var(--border-active);
+}
+
+.anim-picker-wrapper.open .picker-arrow {
+    transform: rotate(180deg);
+}
+
+/* Dropdown panel */
+.anim-picker-dropdown {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    right: 0;
+    width: min(140px, calc(100vw - 24px));
+    background: var(--bg-elevated);
+    backdrop-filter: var(--blur-h);
+    -webkit-backdrop-filter: var(--blur-h);
+    border: 1px solid var(--border-h);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    will-change: max-height, opacity;
+    transition: max-height var(--ease-out), opacity var(--ease);
+    pointer-events: none;
+}
+
+.anim-picker-wrapper.open .anim-picker-dropdown {
+    max-height: 50vh;
+    opacity: 1;
+    pointer-events: auto;
+    overflow-y: auto;
+}
+
+.anim-picker-dropdown::-webkit-scrollbar {
+    width: 3px;
+}
+.anim-picker-dropdown::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 3px;
+}
+
+.anim-picker-dropdown ul {
+    list-style: none;
+    margin: 0;
+    padding: 4px;
+}
+
+.anim-picker-dropdown li {
+    padding: 8px 12px;
+    font-size: 11px;
+    color: var(--text-2);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background var(--ease), color var(--ease);
+    min-height: var(--touch-sm);
+    touch-action: manipulation;
+    display: flex;
+    align-items: center;
+}
+
+.anim-picker-dropdown li:hover {
+    background: var(--bg-hover);
+    color: var(--text-1);
+}
+
+.anim-picker-dropdown li:active {
+    background: var(--accent-soft);
+    color: var(--accent-h);
+}
+
+.anim-picker-dropdown li.active {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 2px 8px var(--accent-glow);
+}
+
+/* ===== Bottom Row: Toggle Grid ===== */
+.footer-row-bottom {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 3px;
+}
+
+.toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    background: var(--bg-hover);
+    border: 1px solid transparent;
+    color: var(--text-3);
+    padding: 0 2px;
+    border-radius: 8px;
+    font-size: 9px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 34px;
+    touch-action: manipulation;
+    letter-spacing: 0.1px;
+    transition: background var(--ease), color var(--ease), transform var(--ease),
+        border-color var(--ease), box-shadow var(--ease);
+}
+
+.toggle-btn:hover {
+    background: var(--bg-active);
+    color: var(--text-2);
+}
+
+.toggle-btn:active {
+    transform: scale(0.92);
+    background: var(--bg-active);
+}
+
+.toggle-btn svg {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+}
+
+.toggle-btn span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Active state — green glow */
+.toggle-btn.active {
+    background: rgba(45, 208, 110, 0.18);
+    border-color: rgba(45, 208, 110, 0.5);
+    color: var(--green);
+    box-shadow: 0 0 12px var(--green-glow), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.toggle-btn.active:hover {
+    background: rgba(45, 208, 110, 0.24);
+    color: var(--green-h);
+}
+
+.toggle-btn.active:active {
+    transform: scale(0.92);
+}

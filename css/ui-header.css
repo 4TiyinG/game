@@ -1,0 +1,134 @@
+/* ============================================================ */
+/* ui-header.css - Top Bar (Mobile Game HUD)                    */
+/* Portrait: Centered glassmorphism pill with file selector     */
+/*           and gradient load button                           */
+/* ============================================================ */
+
+/* ===== Header Container ===== */
+.ui-header {
+    position: fixed;
+    top: calc(8px + var(--safe-t));
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-glass);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: 1px solid var(--border-h);
+    border-radius: var(--pill);
+    padding: 4px 4px 4px 12px;
+    z-index: 10;
+    box-shadow: var(--shadow), var(--shadow-inset);
+    max-width: min(calc(100vw - 16px), 360px);
+    will-change: transform;
+    transition: opacity var(--ease), transform var(--ease);
+}
+
+/* ===== File Wrapper (clickable area) ===== */
+.file-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 130px;
+    min-height: 34px;
+    pointer-events: auto;
+    cursor: pointer;
+    touch-action: manipulation;
+    padding-right: 3px;
+    transition: opacity var(--ease);
+}
+.file-wrapper:active {
+    opacity: 0.75;
+}
+
+.file-wrapper .icon-svg {
+    width: 16px;
+    height: 16px;
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+/* ===== File Label ===== */
+.file-label {
+    cursor: pointer;
+    color: var(--text-1);
+    font-size: 11px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 72px;
+    letter-spacing: 0.2px;
+    transition: color var(--ease);
+    touch-action: manipulation;
+}
+.file-label:hover {
+    color: var(--accent-h);
+}
+
+#file-input {
+    display: none;
+}
+
+/* ===== Load Button ===== */
+.load-btn {
+    background: linear-gradient(135deg, var(--accent) 0%, #3b6fd6 100%);
+    color: #fff;
+    border: none;
+    padding: 0 16px;
+    border-radius: var(--pill);
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    touch-action: manipulation;
+    min-height: 34px;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+    box-shadow:
+        0 4px 16px var(--accent-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+    will-change: transform;
+    transition: transform var(--ease), background var(--ease), box-shadow var(--ease);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Top gloss highlight */
+.load-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, transparent 50%);
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.load-btn .icon-svg {
+    width: 14px;
+    height: 14px;
+}
+
+.load-btn:hover {
+    background: linear-gradient(135deg, var(--accent-h) 0%, #4f8cff 100%);
+    box-shadow:
+        0 6px 24px var(--accent-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+}
+
+.load-btn:active {
+    transform: scale(0.92);
+    box-shadow:
+        0 2px 8px var(--accent-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+}

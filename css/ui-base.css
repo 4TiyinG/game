@@ -1,0 +1,220 @@
+/* ============================================================ */
+/* ui-base.css - Global Reset & Base (Premium Mobile Game UI)    */
+/* ============================================================ */
+
+:root {
+    /* ===== Brand Colors ===== */
+    --accent: #4f8cff;
+    --accent-h: #6ba3ff;
+    --accent-glow: rgba(79, 140, 255, 0.4);
+    --accent-soft: rgba(79, 140, 255, 0.12);
+
+    --green: #2dd06e;
+    --green-h: #5ce892;
+    --green-glow: rgba(45, 208, 110, 0.3);
+
+    --warn: #fbbf24;
+    --warn-glow: rgba(251, 191, 36, 0.3);
+    --red: #f43f5e;
+    --red-glow: rgba(244, 63, 94, 0.3);
+    --purple: #a78bfa;
+    --purple-glow: rgba(167, 139, 250, 0.3);
+    --pink: #f472b6;
+    --pink-glow: rgba(244, 114, 182, 0.3);
+
+    /* ===== Glass Backgrounds ===== */
+    --bg-glass: rgba(10, 14, 23, 0.72);
+    --bg-glass-h: rgba(10, 14, 23, 0.85);
+    --bg-card: rgba(15, 21, 34, 0.88);
+    --bg-elevated: rgba(18, 25, 40, 0.94);
+    --bg-hover: rgba(255, 255, 255, 0.08);
+    --bg-active: rgba(255, 255, 255, 0.14);
+
+    /* ===== Text ===== */
+    --text-1: #f0f4fa;
+    --text-2: #94a3b8;
+    --text-3: #64748b;
+
+    /* ===== Borders ===== */
+    --border: rgba(255, 255, 255, 0.06);
+    --border-h: rgba(255, 255, 255, 0.12);
+    --border-active: rgba(79, 140, 255, 0.4);
+
+    /* ===== Effects ===== */
+    --blur: blur(20px) saturate(180%);
+    --blur-h: blur(28px) saturate(200%);
+    --blur-strong: blur(40px) saturate(220%);
+
+    --pill: 999px;
+    --card: 14px;
+    --full: 50%;
+
+    --shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.55);
+    --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+    /* ===== Touch Targets ===== */
+    --touch-sm: 32px;
+    --touch-md: 38px;
+    --touch-lg: 44px;
+
+    /* ===== Timing ===== */
+    --ease: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-out: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    --spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* ===== Safe Areas ===== */
+    --safe-t: env(safe-area-inset-top, 0px);
+    --safe-b: env(safe-area-inset-bottom, 0px);
+    --safe-l: env(safe-area-inset-left, 0px);
+    --safe-r: env(safe-area-inset-right, 0px);
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: transparent;
+    touch-action: none;
+    color: var(--text-1);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    overscroll-behavior: none;
+}
+
+#canvas-container {
+    width: 100vw;
+    width: 100dvw;
+    height: 100vh;
+    height: 100dvh;
+    background: #0a0e17;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.icon-svg {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+
+/* ===== Loading Overlay ===== */
+#loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 8, 14, 0.75);
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    will-change: opacity;
+    transition: opacity 0.5s ease;
+}
+
+.loading-hidden { opacity: 0 !important; pointer-events: none !important; }
+
+.loader-spinner {
+    width: 36px;
+    height: 36px;
+    position: relative;
+    margin-bottom: 14px;
+}
+.loader-spinner::before,
+.loader-spinner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid transparent;
+}
+.loader-spinner::before {
+    border-top-color: var(--accent);
+    border-right-color: var(--accent);
+    animation: spin 0.7s linear infinite;
+}
+.loader-spinner::after {
+    inset: 6px;
+    border-bottom-color: var(--green);
+    border-left-color: var(--green);
+    animation: spin 0.9s linear infinite reverse;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loader-text {
+    color: var(--text-2);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+/* ===== Top-right Control Buttons ===== */
+#control-buttons {
+    position: fixed;
+    top: calc(8px + var(--safe-t));
+    right: calc(8px + var(--safe-r));
+    z-index: 10;
+    display: flex;
+    gap: 6px;
+    pointer-events: none;
+}
+
+#control-buttons button {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    border-radius: var(--full);
+    border: 1px solid var(--border-h);
+    background: var(--bg-glass);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    color: var(--text-2);
+    font-size: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    touch-action: manipulation;
+    pointer-events: auto;
+    padding: 0;
+    box-shadow: var(--shadow), var(--shadow-inset);
+    will-change: transform;
+    transition: transform var(--ease), background var(--ease), color var(--ease);
+}
+
+#control-buttons button:active {
+    transform: scale(0.82);
+    background: var(--bg-active);
+    color: var(--text-1);
+}
+
+#control-buttons button:hover {
+    color: var(--text-1);
+    border-color: var(--border-h);
+}
+
+#layout-toggle-btn.active {
+    background: rgba(251, 191, 36, 0.15);
+    border-color: rgba(251, 191, 36, 0.4);
+    color: var(--warn);
+}
+#layout-toggle-btn.active .icon-svg { color: var(--warn); }

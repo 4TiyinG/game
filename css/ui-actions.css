@@ -1,0 +1,167 @@
+/* ============================================================ */
+/* ui-actions.css - Right-side Action Buttons (Portrait Default) */
+/* ============================================================ */
+
+/* ===== Panel Container ===== */
+.action-panel {
+    position: absolute;
+    top: 34%;
+    right: calc(10px + var(--safe-r));
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 10;
+    pointer-events: none;
+}
+.action-panel > * {
+    pointer-events: auto;
+}
+
+/* ===== Base Button ===== */
+.action-btn {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    min-height: 42px;
+    border-radius: var(--card);
+    background:
+        linear-gradient(145deg, rgba(255,255,255,0.07) 0%, transparent 45%),
+        var(--bg-glass);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: 1px solid var(--border-h);
+    color: var(--text-1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+    box-shadow:
+        0 4px 14px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.08),
+        inset 0 -3px 8px rgba(0,0,0,0.12);
+    will-change: transform, box-shadow, background;
+    transition:
+        transform var(--ease),
+        box-shadow var(--ease),
+        background var(--ease),
+        border-color var(--ease);
+}
+
+/* ===== Theme: Jump (Accent Blue) ===== */
+#btn-jump {
+    color: var(--accent);
+    border-color: rgba(79,140,255,0.18);
+    background:
+        linear-gradient(145deg, rgba(255,255,255,0.07) 0%, transparent 45%),
+        radial-gradient(circle at 50% 120%, rgba(79,140,255,0.1) 0%, transparent 50%),
+        var(--bg-glass);
+}
+#btn-jump:active {
+    transform: scale(0.85);
+    background:
+        linear-gradient(145deg, rgba(79,140,255,0.3) 0%, rgba(79,140,255,0.06) 100%),
+        var(--bg-glass-h);
+    border-color: var(--accent);
+    box-shadow:
+        0 0 24px var(--accent-glow),
+        0 2px 8px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.1),
+        inset 0 -2px 6px rgba(0,0,0,0.15);
+}
+
+/* ===== Theme: Crouch (Amber) ===== */
+#btn-crouch {
+    color: var(--warn);
+    border-color: rgba(251,191,36,0.18);
+    background:
+        linear-gradient(145deg, rgba(255,255,255,0.07) 0%, transparent 45%),
+        radial-gradient(circle at 50% 120%, rgba(251,191,36,0.1) 0%, transparent 50%),
+        var(--bg-glass);
+}
+#btn-crouch:active {
+    transform: scale(0.85);
+    background:
+        linear-gradient(145deg, rgba(251,191,36,0.3) 0%, rgba(251,191,36,0.06) 100%),
+        var(--bg-glass-h);
+    border-color: var(--warn);
+    box-shadow:
+        0 0 24px var(--warn-glow),
+        0 2px 8px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.1),
+        inset 0 -2px 6px rgba(0,0,0,0.15);
+}
+
+/* ===== Theme: Skill A (Purple) ===== */
+#btn-skill1 {
+    color: var(--purple);
+    border-color: rgba(167,139,250,0.18);
+    background:
+        linear-gradient(145deg, rgba(255,255,255,0.07) 0%, transparent 45%),
+        radial-gradient(circle at 50% 120%, rgba(167,139,250,0.1) 0%, transparent 50%),
+        var(--bg-glass);
+}
+#btn-skill1:active {
+    transform: scale(0.85);
+    background:
+        linear-gradient(145deg, rgba(167,139,250,0.3) 0%, rgba(167,139,250,0.06) 100%),
+        var(--bg-glass-h);
+    border-color: var(--purple);
+    box-shadow:
+        0 0 24px var(--purple-glow),
+        0 2px 8px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.1),
+        inset 0 -2px 6px rgba(0,0,0,0.15);
+}
+
+/* ===== Theme: Skill B (Pink) ===== */
+#btn-skill2 {
+    color: var(--pink);
+    border-color: rgba(244,114,182,0.18);
+    background:
+        linear-gradient(145deg, rgba(255,255,255,0.07) 0%, transparent 45%),
+        radial-gradient(circle at 50% 120%, rgba(244,114,182,0.1) 0%, transparent 50%),
+        var(--bg-glass);
+}
+#btn-skill2:active {
+    transform: scale(0.85);
+    background:
+        linear-gradient(145deg, rgba(244,114,182,0.3) 0%, rgba(244,114,182,0.06) 100%),
+        var(--bg-glass-h);
+    border-color: var(--pink);
+    box-shadow:
+        0 0 24px var(--pink-glow),
+        0 2px 8px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.1),
+        inset 0 -2px 6px rgba(0,0,0,0.15);
+}
+
+/* ===== Label ===== */
+.action-btn .label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-3);
+    letter-spacing: 0.3px;
+    line-height: 1;
+    margin-top: 1px;
+    transition: color var(--ease);
+}
+.action-btn:active .label {
+    color: var(--text-1);
+}
+
+/* ===== SVG Icon ===== */
+.action-btn svg {
+    width: 18px;
+    height: 18px;
+    will-change: transform;
+    transition: transform var(--ease);
+}
+.action-btn:active svg {
+    transform: scale(1.12);
+}

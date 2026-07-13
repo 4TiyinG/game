@@ -1,0 +1,193 @@
+/* ============================================================ */
+/* ui-joystick.css - Virtual Joystick (Game Controller)         */
+/* Portrait: Bottom-left, 64px base with optimized touch zone   */
+/* ============================================================ */
+
+/* ===== Container ===== */
+.joystick-container {
+    position: absolute;
+    bottom: calc(12px + var(--safe-b));
+    left: calc(12px + var(--safe-l));
+    z-index: 12;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+}
+.joystick-container > * {
+    pointer-events: auto;
+}
+
+/* ===== Joystick Zone (Base) ===== */
+#joystick-zone {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(10, 14, 23, 0.72);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow:
+        inset 0 2px 8px rgba(0, 0, 0, 0.4),
+        inset 0 -1px 4px rgba(0, 0, 0, 0.2),
+        0 4px 16px rgba(0, 0, 0, 0.3);
+    touch-action: none;
+    position: relative;
+    border: none;
+    will-change: transform;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* 扩大触控热区：通过不可见的 padding 扩展可触摸范围 */
+#joystick-zone::after {
+    content: '';
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    pointer-events: auto;
+    touch-action: none;
+}
+
+/* ===== Rainbow Ring ===== */
+#joystick-zone::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    padding: 3px;
+    background: conic-gradient(from 0deg,
+        var(--accent),
+        var(--purple),
+        var(--pink),
+        var(--warn),
+        var(--green),
+        var(--accent));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.3;
+    /* 仅在触摸时触发旋转，避免持续 GPU 开销 */
+}
+
+/* 触摸时才启动动画 */
+#joystick-zone:active::before {
+    opacity: 0.85;
+    animation: rainbowSpin 2s linear infinite;
+    will-change: transform;
+}
+
+@keyframes rainbowSpin {
+    to { transform: rotate(360deg); }
+}
+
+/* ===== nipplejs .back (base circle) ===== */
+#joystick-zone .back {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 50% !important;
+}
+
+/* ===== Joystick Thumb (.front) — 3D Ball ===== */
+#joystick-zone .front {
+    position: relative;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 28%,
+        #ffffff 0%,
+        #f1f5f9 20%,
+        #e2e8f0 50%,
+        #cbd5e1 78%,
+        #94a3b8 100%);
+    box-shadow:
+        inset 0 2px 6px rgba(255, 255, 255, 0.95),
+        inset 0 -6px 12px rgba(0, 0, 0, 0.2),
+        0 6px 20px rgba(0, 0, 0, 0.3),
+        0 2px 6px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    will-change: transform;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+/* Diagonal sheen overlay */
+#joystick-zone .front::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: linear-gradient(150deg,
+        rgba(255, 255, 255, 0.7) 0%,
+        rgba(255, 255, 255, 0) 35%,
+        rgba(0, 0, 0, 0) 70%,
+        rgba(0, 0, 0, 0.08) 100%);
+    pointer-events: none;
+    mix-blend-mode: overlay;
+}
+
+/* Specular highlight spot */
+#joystick-zone .front::after {
+    content: '';
+    position: absolute;
+    top: 15%;
+    left: 20%;
+    width: 35%;
+    height: 30%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center,
+        rgba(255, 255, 255, 0.6) 0%,
+        rgba(255, 255, 255, 0) 70%);
+    pointer-events: none;
+}
+
+/* Pressed state — deeper shadow (transform handled by nipplejs inline) */
+#joystick-zone .front:active {
+    box-shadow:
+        inset 0 1px 3px rgba(255, 255, 255, 0.8),
+        inset 0 -8px 16px rgba(0, 0, 0, 0.25),
+        0 3px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* ===== Settings Gear Button ===== */
+.joystick-settings-btn {
+    margin-left: 8px;
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
+    border-radius: 50%;
+    background: var(--bg-glass);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: 1px solid var(--border-h);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    touch-action: manipulation;
+    color: var(--text-2);
+    box-shadow: var(--shadow), var(--shadow-inset);
+    transition: transform var(--ease), color var(--ease),
+        background var(--ease), border-color var(--ease);
+    will-change: transform;
+}
+
+.joystick-settings-btn .icon-svg {
+    width: 14px;
+    height: 14px;
+    transition: transform var(--ease);
+}
+
+.joystick-settings-btn:hover {
+    color: var(--text-1);
+    background: var(--bg-glass-h);
+    border-color: var(--border-active);
+}
+
+.joystick-settings-btn:active {
+    transform: scale(0.85);
+    color: var(--accent-h);
+}
+
+.joystick-settings-btn:active .icon-svg {
+    transform: rotate(60deg);
+}

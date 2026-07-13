@@ -1,438 +1,680 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>AK-12 · 枪火突袭 · 极速版</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#0a0e17">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="3D交互">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="description" content="3D物理交互引擎 - 支持角色控制、物理碰撞、动画系统">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>3D 物理交互引擎</title>
 
-<!-- ========== 精简且高效的资源提示 ========== -->
-<!-- 关键域名预连接（仅保留实际使用的 CDN） -->
-<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-<link rel="dns-prefetch" href="https://image2url.com">
+<!-- 全局基础重置、加载遮罩与核心控制按钮 -->
+<link rel="stylesheet" href="css/ui-base.css">
+<!-- 启动背景霓虹流光与星空粒子特效 -->
+<link rel="stylesheet" href="css/ui-backdrop.css">
+<!-- 顶部栏（文件选择、加载按钮） -->
+<link rel="stylesheet" href="css/ui-header.css">
+<!-- 底部控制面板（状态显示、动画选择器、功能开关） -->
+<link rel="stylesheet" href="css/ui-footer.css">
+<!-- 左摇杆与设置齿轮 -->
+<link rel="stylesheet" href="css/ui-joystick.css">
+<!-- 右侧动作按钮组（跳跃、趴下、技能） -->
+<link rel="stylesheet" href="css/ui-actions.css">
+<!-- 映射设置弹窗与双端滑动条 -->
+<link rel="stylesheet" href="css/ui-settings.css">
+<!-- 横屏与竖屏自适应规则 -->
+<link rel="stylesheet" href="css/ui-responsive.css">
 
-<!-- 
-  优化策略： 
-  - 仅对最高优先级的核心库使用 preload（Three.js + GLTFLoader）
-  - 其他脚本和模型/纹理降级为 prefetch，避免抢占关键带宽
-  - 移除不必要的 preconnect（threejs.org / unpkg.com 等）
--->
-
-<!-- 核心库预加载（高优先级） -->
-<link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" fetchpriority="high" crossorigin="anonymous">
-<link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js" fetchpriority="high" crossorigin="anonymous">
-
-<!-- 游戏逻辑脚本：使用 prefetch 降低优先级，但保留依赖顺序（defer 保证执行顺序） -->
-<link rel="prefetch" as="script" href="13.js">
-<link rel="prefetch" as="script" href="a1.js">
-<link rel="prefetch" as="script" href="a2.js">
-<link rel="prefetch" as="script" href="a3.js">
-<link rel="prefetch" as="script" href="a4.js">
-<link rel="prefetch" as="script" href="a5.js">
-<link rel="prefetch" as="script" href="a游戏.js">
-
-<!-- Comlink 仅在多线程场景需要，降级为 prefetch -->
-<link rel="prefetch" as="script" href="https://unpkg.com/comlink@4.4.1/dist/umd/comlink.min.js" crossorigin="anonymous">
-
-<!-- 纹理图片：非首屏必需，降级为 prefetch（避免阻塞关键资源） -->
-<link rel="prefetch" as="image" href="https://image2url.com/r2/bucket1/images/1767924501264-882d54aa-2ff0-4d62-9a9a-a352455d8fba.jpg">
-<link rel="prefetch" as="image" href="https://image2url.com/r2/bucket2/images/1766739894913-d6018d51-9e56-4a5e-8c55-ae182f792e65.jpg">
-<link rel="prefetch" as="image" href="https://threejs.org/examples/textures/waternormals.jpg">
-
-<!-- 主武器模型：非关键路径，使用 prefetch -->
-<link rel="prefetch" as="fetch" href="https://cdn.jsdelivr.net/gh/4TiyinG/45@main/ak-12.glb" crossorigin="anonymous">
-
-<!-- 其他装饰模型：保持 prefetch 无影响 -->
-<link rel="prefetch" as="fetch" href="https://cdn.jsdelivr.net/gh/4TiyinG/45@main/Soldier.glb" crossorigin="anonymous">
-<link rel="prefetch" as="fetch" href="https://cdn.jsdelivr.net/gh/4TiyinG/45@main/deng.glb" crossorigin="anonymous">
-<link rel="prefetch" as="fetch" href="https://cdn.jsdelivr.net/gh/4TiyinG/45@main/hachune-miku-doll.glb" crossorigin="anonymous">
-<link rel="prefetch" as="fetch" href="https://cdn.jsdelivr.net/gh/4TiyinG/45@main/guitar.glb" crossorigin="anonymous">
-
-<!-- 样式表：非阻塞加载（最佳实践） -->
-<link rel="preload" as="style" href="style.css" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="style.css"></noscript>
-
+<!-- Speculation Rules API: 预加载场景资源（骁龙8+ 空闲时后台拉取） -->
+<script type="speculationrules">
+{
+  "prefetch": [
+    { "urls": ["model/hongmao.glb", "model/pc.glb", "assets/textures/skybox/skybox_px.jpg", "assets/textures/skybox/skybox_nx.jpg", "assets/textures/skybox/skybox_py.jpg", "assets/textures/skybox/skybox_ny.jpg", "assets/textures/skybox/skybox_pz.jpg", "assets/textures/skybox/skybox_nz.jpg", "assets/textures/hardwood2_diffuse.jpg"], "eagerness": "eager" }
+  ]
+}
+</script>
 </head>
 <body>
-<div id="game-container">
-<canvas id="canvas"></canvas>
-<div id="crosshair"></div>
-<div id="hud">
-<div id="ammo">60/60</div>
-<div id="health">💔100</div>
-</div>
-<div id="joystick-container">
-<div id="joystick-base"><div id="joystick-stick"></div></div>
-</div>
-<div id="btn-jump" class="action-btn">↑</div>
-<div id="btn-crouch" class="action-btn">↓</div>
-<div id="btn-prone" class="action-btn">▼</div>
-<div id="fire-button" class="right-btn">🔥</div>
-<div id="reload-button" class="right-btn">♻️</div>
-<div id="equip-button" class="right-btn">🎒</div>
-<div id="aim-button" class="right-btn">⚄</div>
-<div id="sky-toggle">🌤️</div>
-<div id="perf-toggle">🚀</div>
-<!-- 全屏按钮 -->
-<div id="fullscreen-toggle" class="right-btn" style="cursor:pointer;">⛶</div>
-<div id="edit-toggle">✏️</div>
-<div id="toggle-panel">📋</div>
-<div id="customize-panel" class="hidden">
-<h4>摇杆</h4>
-<div class="drag-note">长按拖动 / 坐标</div>
-<div class="coord-row"><label>X</label><input type="number" id="joy-x" step="1"><label>px</label></div>
-<div class="coord-row"><label>Y</label><input type="number" id="joy-y" step="1"><label>px</label></div>
-<button class="reset-btn" id="reset-joy"></button>
-<div class="divider"></div>
-<h4>开火按钮</h4>
-<div class="drag-note">长按拖动 / 坐标</div>
-<div class="coord-row"><label>X</label><input type="number" id="fire-x" step="1"><label>px</label></div>
-<div class="coord-row"><label>Y</label><input type="number" id="fire-y" step="1"><label>px</label></div>
-<button class="reset-btn" id="reset-fire">重置</button>
-</div>
-<div id="loading">...</div>
-</div>
 
-<!-- ========== 关键脚本：使用 defer 保证顺序且不阻塞解析 ========== -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer fetchpriority="high" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js" defer fetchpriority="high" crossorigin="anonymous"></script>
-<!-- 游戏逻辑脚本（保留原始顺序，依赖 Three.js 已就绪） -->
-<script src="13.js" defer></script>
-<script src="a1.js" defer></script>
-<script src="a2.js" defer></script>
-<script src="a3.js" defer></script>
-<script src="a4.js" defer></script>
-<script src="a5.js" defer></script>
-<script src="a游戏.js" defer></script>
+  <!-- 霓虹启动背景层（与 CSS 中 #startup-backdrop 联动） -->
+  <div id="startup-backdrop"></div>
 
-<!-- 非关键统计库：异步加载，完全不影响首屏 -->
-<script src="https://cdn.jsdelivr.net/npm/stats.js@0.17.0/build/stats.min.js" async></script>
+  <!-- 加载遮罩 -->
+  <div id="loading-overlay" class="loading-hidden">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">正在解析与构建...</div>
+  </div>
 
-<!-- ========== 优化后的全屏功能 + 渲染适配（轻量化，不阻塞） ========== -->
-<script>
-(function() {
-    "use strict";
-    
-    const docEl = document.documentElement;
-    const requestFullscreen = docEl.requestFullscreen ||
-        docEl.webkitRequestFullscreen ||
-        docEl.msRequestFullscreen ||
-        docEl.mozRequestFullScreen;
-    const exitFullscreen = document.exitFullscreen ||
-        document.webkitExitFullscreen ||
-        document.msExitFullscreen ||
-        document.mozCancelFullScreen;
-    const fullscreenElement = () => document.fullscreenElement ||
-        document.webkitFullscreenElement ||
-        document.msFullscreenElement ||
-        document.mozFullScreenElement;
-    
-    function notifyResize() {
-        const canvas = document.getElementById('canvas');
-        if (!canvas) return;
-        const width = canvas.clientWidth;
-        const height = canvas.clientHeight;
-        if (window.__AK12_RENDER_API__ && typeof window.__AK12_RENDER_API__.resize === 'function') {
-            window.__AK12_RENDER_API__.resize(width, height);
-        }
-        if (window.renderer && typeof window.renderer.setSize === 'function') {
-            window.renderer.setSize(width, height);
-            if (window.camera && window.camera.aspect) {
-                window.camera.aspect = width / height;
-                window.camera.updateProjectionMatrix();
-            }
-        }
-        window.dispatchEvent(new Event('resize'));
-    }
-    
-    async function toggleFullscreen() {
-        try {
-            const isFull = !!fullscreenElement();
-            if (isFull) {
-                if (exitFullscreen) await exitFullscreen.call(document);
-            } else {
-                if (requestFullscreen) await requestFullscreen.call(docEl);
-            }
-        } catch (err) {
-            console.warn('全屏切换失败:', err);
-            try {
-                if (fullscreenElement()) {
-                    if (exitFullscreen) exitFullscreen.call(document);
-                } else {
-                    if (requestFullscreen) requestFullscreen.call(docEl);
-                }
-            } catch (e) {}
-        }
-    }
-    
-    function updateFullscreenButton() {
-        const btn = document.getElementById('fullscreen-toggle');
-        if (!btn) return;
-        const isFull = !!fullscreenElement();
-        btn.textContent = isFull ? '✖' : '⛶';
-        if (isFull) btn.style.backgroundColor = 'rgba(255, 80, 40, 0.85)';
-        else btn.style.backgroundColor = '';
-    }
-    
-    function onFullscreenChange() {
-        updateFullscreenButton();
-        setTimeout(() => notifyResize(), 50);
-        setTimeout(() => notifyResize(), 200);
-    }
-    
-    const fullscreenEvents = ['fullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange', 'mozfullscreenchange'];
-    fullscreenEvents.forEach(evt => document.addEventListener(evt, onFullscreenChange));
-    window.addEventListener('resize', () => notifyResize());
-    
-    const fullscreenBtn = document.getElementById('fullscreen-toggle');
-    if (fullscreenBtn) {
-        fullscreenBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleFullscreen(); });
-        fullscreenBtn.addEventListener('touchstart', (e) => { e.preventDefault(); e.stopPropagation(); toggleFullscreen(); }, { passive: false });
-    }
-    
-    updateFullscreenButton();
-    notifyResize();
-})();
-</script>
+  <!-- 顶部栏 -->
+  <div class="ui-header">
+    <div class="file-wrapper">
+      <!-- File icon -->
+      <svg class="icon-svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v5h5"/></svg>
+      <span class="file-label" id="file-label">选择 GLB</span>
+      <input type="file" id="file-input" accept=".glb,.gltf">
+    </div>
+    <button class="load-btn" id="load-btn" type="button">
+      <!-- Upload/Load icon -->
+      <svg class="icon-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      加载
+    </button>
+  </div>
 
-<!-- ========== 原有内联优化（音频、性能、SW）全部保留，且已做延迟执行优化 ========== -->
-<script>
-(function() {
-    function runWhenReady(fn) {
-        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
-        else fn();
+  <!-- 底部控制区 -->
+  <div class="ui-footer" id="ui-footer">
+    <div class="footer-row-top">
+      <div class="status-area">
+        <div class="play-status">
+          <svg id="play-icon" class="icon-svg" viewBox="0 0 24 24" width="12" height="12" fill="#34d399" stroke="none" style="display:none;"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+          <svg id="pause-icon" class="icon-svg" viewBox="0 0 24 24" width="12" height="12" fill="#fbbf24" stroke="none" style="display:none;"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+        </div>
+        <span class="animation-status" id="status-text">等待加载</span>
+      </div>
+      <div class="anim-picker-wrapper" id="anim-picker-wrapper">
+        <div class="anim-picker-trigger" id="anim-picker-trigger">
+          <span id="selected-anim-name">无</span>
+          <svg class="picker-arrow" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="anim-picker-dropdown" id="anim-picker-dropdown">
+          <ul id="anim-list-container"></ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-row-bottom">
+      <button class="toggle-btn" id="toggle-collider" type="button">
+        <svg class="icon-svg" viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8"/><path d="M3.3 6.96 12 12.01l8.7-5.05"/><path d="M12 22.08V12"/></svg>
+        <span>碰撞体</span>
+      </button>
+      <button class="toggle-btn" id="toggle-dynamic" type="button">
+        <svg class="icon-svg" viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        <span>动态</span>
+      </button>
+      <button class="toggle-btn" id="toggle-wireframe" type="button">
+        <svg class="icon-svg" viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+        <span>线框</span>
+      </button>
+      <button class="toggle-btn" id="toggle-physics" type="button">
+        <svg class="icon-svg" viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10"/></svg>
+        <span>物理</span>
+      </button>
+      <button class="toggle-btn" id="toggle-tap" type="button">
+        <svg class="icon-svg" viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="10"/></svg>
+        <span>点击切换</span>
+      </button>
+      <button class="toggle-btn" id="toggle-screen" type="button">
+        <svg class="icon-svg" viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <span>屏幕</span>
+      </button>
+      <button class="toggle-btn" id="toggle-filter" type="button">
+        <svg class="icon-svg" viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3"/><path d="M12 21v-9M12 8V3"/><path d="M20 21v-5M20 12V3"/><path d="M1 14h6"/><path d="M9 8h6"/><path d="M17 16h6"/></svg>
+        <span>滤镜</span>
+      </button>
+      <button class="toggle-btn" id="toggle-mapping" type="button">
+        <svg class="icon-svg" viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="3"/></svg>
+        <span>映射</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 动作面板 -->
+  <div class="action-panel" id="action-panel">
+    <button class="action-btn" id="btn-jump" type="button">
+      <svg class="icon-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/><line x1="12" y1="9" x2="12" y2="3"/></svg>
+      <span class="label">跳跃</span>
+    </button>
+    <button class="action-btn" id="btn-crouch" type="button">
+      <svg class="icon-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 20 8 14 12 20 16 14 20 20"/></svg>
+      <span class="label">趴下</span>
+    </button>
+    <button class="action-btn" id="btn-skill1" type="button">
+      <svg class="icon-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <span class="label">技能A</span>
+    </button>
+    <button class="action-btn" id="btn-skill2" type="button">
+      <svg class="icon-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="m16.24 16.24 2.83 2.83"/><path d="M2 12h4M18 12h4"/><path d="m4.93 19.07 2.83-2.83"/><path d="m16.24 7.76 2.83-2.83"/></svg>
+      <span class="label">技能B</span>
+    </button>
+  </div>
+
+  <!-- 摇杆区域 -->
+  <div class="joystick-container" id="joystick-wrapper">
+    <div id="joystick-zone"></div>
+  </div>
+
+  <!-- 设置面板 -->
+  <div class="settings-overlay" id="settings-overlay">
+    <div class="settings-card">
+      <div class="settings-header">
+        <span>摇杆映射与动作配置</span>
+        <span class="settings-close" id="settings-close">
+          <svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </span>
+      </div>
+      <div class="settings-content">
+        <!-- Direction selector grid -->
+        <div class="dir-grid">
+          <button class="dir-chip" data-key="forward"><svg class="icon-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg><span>前走</span></button>
+          <button class="dir-chip" data-key="backward"><svg class="icon-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="5 12 12 19 19 12"/></svg><span>后走</span></button>
+          <button class="dir-chip" data-key="left"><svg class="icon-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 5 5 12 12 19"/></svg><span>左走</span></button>
+          <button class="dir-chip" data-key="right"><svg class="icon-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg><span>右走</span></button>
+          <button class="dir-chip" data-key="forward_run"><svg class="icon-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/><line x1="17" y1="3" x2="22" y2="3"/><line x1="22" y1="3" x2="22" y2="8"/></svg><span>前跑</span></button>
+          <button class="dir-chip" data-key="backward_run"><svg class="icon-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="5 12 12 19 19 12"/><line x1="17" y1="3" x2="22" y2="3"/><line x1="22" y1="3" x2="22" y2="8"/></svg><span>后跑</span></button>
+          <button class="dir-chip" data-key="left_run"><svg class="icon-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 5 5 12 12 19"/><line x1="17" y1="3" x2="22" y2="3"/><line x1="22" y1="3" x2="22" y2="8"/></svg><span>左跑</span></button>
+          <button class="dir-chip" data-key="right_run"><svg class="icon-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/><line x1="17" y1="3" x2="22" y2="3"/><line x1="22" y1="3" x2="22" y2="8"/></svg><span>右跑</span></button>
+          <button class="dir-chip" data-key="jump"><svg class="icon-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/><line x1="12" y1="9" x2="12" y2="3"/></svg><span>跳跃</span></button>
+          <button class="dir-chip" data-key="crouch"><svg class="icon-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 20 8 14 12 20 16 14 20 20"/></svg><span>趴下</span></button>
+          <button class="dir-chip" data-key="skill1"><svg class="icon-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>技能A</span></button>
+          <button class="dir-chip" data-key="skill2"><svg class="icon-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="m16.24 16.24 2.83 2.83"/><path d="M2 12h4M18 12h4"/><path d="m4.93 19.07 2.83-2.83"/><path d="m16.24 7.76 2.83-2.83"/></svg><span>技能B</span></button>
+          <button class="dir-chip" data-key="hit"><svg class="icon-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>受击</span></button>
+        </div>
+
+        <!-- Shared editor for selected direction -->
+        <div class="dir-editor">
+          <div class="editor-row">
+            <label class="editor-label" id="editor-label">选择一个方向</label>
+            <select id="map-active"><option value="-1">无 (默认)</option></select>
+          </div>
+          <div class="editor-slider" id="editor-slider-area" style="display:none;">
+            <div class="slider-label"><label>剪辑区间</label><span id="range-active">0.00 - 0.00s</span></div>
+            <div class="dual-slider"><input type="range" id="start-active" min="0" max="2" step="0.01" value="0"><input type="range" id="end-active" min="0" max="2" step="0.01" value="0"></div>
+          </div>
+        </div>
+
+        <!-- Global settings -->
+        <div class="global-settings">
+          <div class="setting-row">
+            <label>冷却时间</label>
+            <span id="cooldown-display" class="val-badge">0.15s</span>
+          </div>
+          <div class="setting-row">
+            <label>播放速度</label>
+            <span id="speed-display" class="val-badge">1.0x</span>
+          </div>
+          <div class="setting-row">
+            <label>跑步阈值</label>
+            <span id="run-threshold-display" class="val-badge">0.6</span>
+          </div>
+          <input type="range" id="switch-cooldown" min="0.05" max="0.6" step="0.05" value="0.15">
+          <input type="range" id="anim-speed" min="0.5" max="2.0" step="0.1" value="1.0">
+          <input type="range" id="run-threshold" min="0.3" max="0.9" step="0.05" value="0.6">
+        </div>
+
+        <div class="setting-tip">点选方向标签，配置动画映射与剪辑区间。</div>
+        <button class="reset-btn" id="reset-settings-btn" type="button">
+          <svg class="icon-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          恢复默认设置
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 视频滤镜设置面板 -->
+  <div class="settings-overlay" id="filter-overlay">
+    <div class="settings-card">
+      <div class="settings-header">
+        <span class="settings-title">
+          <svg class="icon-svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3"/><path d="M12 21v-9M12 8V3"/><path d="M20 21v-5M20 12V3"/><path d="M1 14h6"/><path d="M9 8h6"/><path d="M17 16h6"/></svg>
+          视频滤镜
+        </span>
+        <span class="settings-close" id="filter-close">
+          <svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </span>
+      </div>
+      <div class="settings-content">
+        <!-- 滤镜预设快捷切换 -->
+        <div class="filter-presets" id="filter-presets">
+          <div class="filter-presets-label">基础滤镜</div>
+          <div class="filter-presets-scroll" id="filter-presets-scroll">
+            <!-- 预设按钮由 JS 动态生成 -->
+          </div>
+        </div>
+        <!-- 手动调整 -->
+        <div class="filter-divider">手动调整</div>
+        <div class="filter-section">
+          <div class="setting-row">
+            <label>亮度</label>
+            <span id="filter-brightness-val" class="val-badge">0.0</span>
+          </div>
+          <input type="range" id="filter-brightness" min="-1.0" max="1.0" step="0.05" value="0.0">
+        </div>
+        <!-- 对比度 -->
+        <div class="filter-section">
+          <div class="setting-row">
+            <label>对比度</label>
+            <span id="filter-contrast-val" class="val-badge">1.0</span>
+          </div>
+          <input type="range" id="filter-contrast" min="0.0" max="3.0" step="0.05" value="1.0">
+        </div>
+        <!-- 饱和度 -->
+        <div class="filter-section">
+          <div class="setting-row">
+            <label>饱和度</label>
+            <span id="filter-saturation-val" class="val-badge">1.0</span>
+          </div>
+          <input type="range" id="filter-saturation" min="0.0" max="2.0" step="0.05" value="1.0">
+        </div>
+        <!-- 色相 -->
+        <div class="filter-section">
+          <div class="setting-row">
+            <label>色相</label>
+            <span id="filter-hue-val" class="val-badge">0.0</span>
+          </div>
+          <input type="range" id="filter-hue" min="-1.0" max="1.0" step="0.05" value="0.0">
+        </div>
+        <!-- 重置按钮 -->
+        <button class="reset-btn" id="filter-reset-btn" type="button">
+          <svg class="icon-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          恢复默认
+        </button>
+        <div class="setting-tip">调整屏幕视频的显示效果，实时预览。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右上角控制组（视图、布局切换、重置） -->
+  <div id="control-buttons">
+    <button class="ctrl-btn" id="view-toggle" type="button">
+      <svg class="icon-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+    </button>
+    <button class="ctrl-btn layout-toggle-btn" id="layout-toggle-btn" type="button">
+      <svg class="icon-svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    </button>
+    <button class="ctrl-btn" id="reset-layout-btn" type="button">
+      <svg class="icon-svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+    </button>
+  </div>
+
+  <!-- 模型缓存（IndexedDB + 内存缓存，避免重复下载和解析） -->
+  <script src="utils/model-cache.js"></script>
+  <script src="utils/task-scheduler.js"></script>
+  <script src="utils/thermal-system.js"></script>
+  <script src="utils/video-decode-bridge.js"></script>
+  <script src="utils/opfs-cache.js"></script>
+  <script src="utils/asset-parse-pool.js"></script>
+  <script src="utils/gpu-upload-queue.js"></script>
+
+  <!-- 3D 容器 -->
+  <div id="canvas-container"></div>
+
+  <!-- ============================================================ -->
+  <!-- Ammo.js 物理引擎 (WASM) — 在 Three.js 之前加载，异步初始化 -->
+  <!-- ============================================================ -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs/ammo.wasm.js"></script>
+
+  <!-- ============================================================ -->
+  <!-- Three.js r170 — 使用 ES Module + importmap 加载（r170 已移除 UMD 全局构建） -->
+  <!-- ============================================================ -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./assets/libs/three.module.js",
+      "three/addons/": "./assets/libs/jsm/"
+    }
+  }
+  </script>
+
+  <!-- 将 ESM 模块导入后挂载到全局 window.THREE，使传统脚本中的 THREE.xxx 调用保持兼容 -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+    // Three.js r170 的 namespace 对象被冻结（Object.isExtensible === false），
+    // 不能直接在其上添加属性，所以将 GLTFLoader / DRACOLoader 挂载到 window 全局。
+    window.THREE = THREE;
+    window.GLTFLoader = GLTFLoader;
+    window.DRACOLoader = DRACOLoader;
+    window.dispatchEvent(new Event('three-ready'));
+  </script>
+
+  <!-- 原 nipplejs 库（无 THREE 依赖，可提前加载） -->
+  <script defer src="./assets/libs/nipplejs.min.js"></script>
+
+  <!-- 所有依赖 THREE 的传统脚本统一在 three-ready 事件后按序加载 -->
+  <script>
+  (function() {
+    var scripts = [
+      'engine/scene-camera.js',
+      'ui/ui-dom.js',
+      'ui/video-screen-shader.js',
+      'engine/physics-world.js',
+      'engine/movement-joystick.js',
+      'core/character-state.js',
+      'core/character-settings.js',
+      'core/character-collider.js',
+      'core/character-anim.js',
+      'core/character-module.js',
+      'engine/position-smooth.js',
+      'ui/ui-config-panel.js',
+      'engine/ik-ccd.js',
+      'engine/ik-foot-phase.js',
+      'engine/ik-skeleton.js',
+      'engine/ik-debug.js',
+      'engine/ik-controller.js',
+      'engine/ik-adapter.js',
+      'app/app-state.js',
+      'app/app-env.js',
+      'app/app-utils.js',
+      'app/app-loader.js',
+      'app/app-interact.js',
+      'app/app-loop.js'
+    ];
+    // 并行下载所有脚本，按顺序执行（async=false 保持执行顺序）
+    function loadAll() {
+      for (var i = 0; i < scripts.length; i++) {
+        var el = document.createElement('script');
+        el.src = scripts[i];
+        el.async = false; // 关键：并行下载，但按声明顺序执行
+        el.onerror = function() { console.error('❌ 加载失败: ' + this.src); };
+        document.body.appendChild(el);
+      }
+    }
+    // 等 THREE 就绪后开始加载
+    if (window.THREE) {
+      loadAll();
+    } else {
+      window.addEventListener('three-ready', loadAll, { once: true });
     }
 
-    // 枪口闪光对象池（需要等待 GameUtils 加载）
-    runWhenReady(() => {
-        function waitFor(prop, callback) {
-            if (window[prop]) callback();
-            else setTimeout(() => waitFor(prop, callback), 50);
-        }
-        waitFor('GameUtils', () => {
-            const Gu = window.GameUtils;
-            const flashPool = [];
-            const POOL_SIZE = 5;
-            let activeFlashes = new Set();
-            
-            for (let i = 0; i < POOL_SIZE; i++) {
-                const light = new THREE.PointLight(0xff6600, 1.5, 8);
-                light.visible = false;
-                flashPool.push(light);
-            }
-            
-            Gu.createMuzzleFlash = function(scene, position, oldFlash) {
-                let light = flashPool.find(l => !l.visible);
-                if (!light) {
-                    light = flashPool[0];
-                    if (light.parent) light.parent.remove(light);
-                    clearTimeout(light._timer);
-                }
-                light.position.copy(position);
-                light.visible = true;
-                scene.add(light);
-                activeFlashes.add(light);
-                
-                if (light._timer) clearTimeout(light._timer);
-                light._timer = setTimeout(() => {
-                    if (light.parent) light.parent.remove(light);
-                    light.visible = false;
-                    activeFlashes.delete(light);
-                }, 50);
-                return light;
-            };
-            
-            window.addEventListener('beforeunload', () => {
-                flashPool.forEach(l => { if (l.parent) l.parent.remove(l); clearTimeout(l._timer); });
-            });
+    // 初始化温控系统（渐进增强，不支持 PressureObserver 时自动降级）
+    setTimeout(function() {
+      if (window.ThermalSystem) {
+        ThermalSystem.init().then(function() {
+          console.log('[App] 温控系统已启动');
         });
-    });
+      }
+    }, 2000); // 延迟 2 秒初始化，避免与模型加载竞争
 
-    // 音频系统（延迟激活监听，避免阻塞首次交互）
-    runWhenReady(() => {
-        let audioCtx = null, gainNode = null, gunshotBuffer = null;
-        let active = false, lastShotTime = 0;
-        const MIN_GAP = 85;
+    // 初始化五级流水线加载系统
+    setTimeout(function() {
+      // OPFS 缓存初始化
+      if (window.OPFSCache) {
+        OPFSCache.init().then(function(supported) {
+          console.log('[App] OPFS 缓存:', supported ? '已启用' : '不支持');
+        });
+      }
+      // Worker 池初始化
+      if (window.AssetParsePool) {
+        AssetParsePool.init();
+        console.log('[App] Worker 解析池已启动:', AssetParsePool.getStatus());
+      }
+    }, 1000); // 延迟 1 秒初始化，避免与首帧渲染竞争
 
-        function createGunshotBuffer() {
-            if (!audioCtx) return null;
-            const dur = 0.2, rate = audioCtx.sampleRate;
-            const len = rate * dur;
-            const buffer = audioCtx.createBuffer(1, len, rate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < len; i++) {
-                let t = i / rate;
-                let env = t < 0.008 ? t / 0.008 : Math.exp(-(t - 0.008) * 24);
-                let imp = Math.sin(2 * Math.PI * 170 * t) * 0.4;
-                let noise = (Math.random() * 2 - 1) * 0.95;
-                let s = (noise * 0.9 + imp * 0.25) * env;
-                data[i] = Math.min(0.99, Math.max(-0.99, s));
-            }
-            return buffer;
+    // Service Worker 注册（HTTPS 或 localhost 才可用）
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('./sw.js').then(function(reg) {
+          console.log('[App] Service Worker 已注册');
+        }).catch(function(e) {
+          console.warn('[App] Service Worker 注册失败:', e);
+        });
+      });
+    }
+  })();
+  </script>
+
+  <!-- ===== 独立内联布局系统（关键 ID 与样式挂钩） ===== -->
+  <script>
+    (function() {
+      var wrapper = document.getElementById('joystick-wrapper');
+      var zone = document.getElementById('joystick-zone');
+      var toggleBtn = document.getElementById('layout-toggle-btn');
+      var resetBtn = document.getElementById('reset-layout-btn');
+      var startupBg = document.getElementById('startup-backdrop');
+      if (!wrapper || !toggleBtn || !zone || !resetBtn) return;
+
+      var isDragging = false;
+      var layoutMode = false;
+      var startX, startY, startRect;
+      var _resizeTimer = null;
+
+      function getOrientationKeys() {
+        var isLandscape = window.matchMedia('(orientation: landscape)').matches;
+        return {
+          leftKey: isLandscape ? 'joystick_left_landscape' : 'joystick_left_portrait',
+          topKey: isLandscape ? 'joystick_top_landscape' : 'joystick_top_portrait'
+        };
+      }
+
+      // 节流的 resize 同步：避免多次 dispatch resize 事件导致 nipplejs 重复重算
+      function forceSyncJoystick() {
+        if (_resizeTimer) clearTimeout(_resizeTimer);
+        _resizeTimer = setTimeout(function() {
+          window.dispatchEvent(new Event('resize'));
+          _resizeTimer = null;
+        }, 60);
+      }
+
+      var keys = getOrientationKeys();
+      var savedLeft = localStorage.getItem(keys.leftKey);
+      var savedTop = localStorage.getItem(keys.topKey);
+      if (savedLeft === null && savedTop === null) {
+        savedLeft = localStorage.getItem('joystick_left');
+        savedTop = localStorage.getItem('joystick_top');
+      }
+      if (savedLeft !== null && savedTop !== null) {
+        wrapper.style.position = 'fixed';
+        wrapper.style.left = savedLeft + 'px';
+        wrapper.style.top = savedTop + 'px';
+        wrapper.style.right = 'auto';
+        wrapper.style.bottom = 'auto';
+        setTimeout(forceSyncJoystick, 50);
+      }
+
+      function getPos(e) {
+        var touch = e.touches ? e.touches[0] : e;
+        return { x: touch.clientX, y: touch.clientY };
+      }
+
+      function updateVisuals() {
+        if (layoutMode) {
+          wrapper.style.outline = '2px dashed #fbbf24';
+          wrapper.style.cursor = 'grab';
+          toggleBtn.classList.add('active');
+        } else {
+          wrapper.style.outline = '';
+          wrapper.style.cursor = '';
+          toggleBtn.classList.remove('active');
+          isDragging = false;
         }
+      }
 
-        function playGunshot() {
-            if (!active || !audioCtx || !gunshotBuffer || audioCtx.state !== 'running') return;
-            const now = performance.now();
-            if (now - lastShotTime < MIN_GAP) return;
-            lastShotTime = now;
-            const src = audioCtx.createBufferSource();
-            src.buffer = gunshotBuffer;
-            src.connect(gainNode);
-            src.start();
-            src.onended = () => src.disconnect();
+      function onStart(e) {
+        if (!layoutMode) return;
+        var pos = getPos(e);
+        startX = pos.x;
+        startY = pos.y;
+        startRect = wrapper.getBoundingClientRect();
+        isDragging = true;
+        wrapper.style.cursor = 'grabbing';
+        wrapper.style.position = 'fixed';
+        if (e.cancelable) e.preventDefault();
+      }
+
+      function onMove(e) {
+        if (!isDragging || !layoutMode) return;
+        var pos = getPos(e);
+        var dx = pos.x - startX;
+        var dy = pos.y - startY;
+        // 边界约束：确保摇杆不会被拖出屏幕
+        var newLeft = Math.max(0, Math.min(window.innerWidth - startRect.width, startRect.left + dx));
+        var newTop = Math.max(0, Math.min(window.innerHeight - startRect.height, startRect.top + dy));
+        wrapper.style.left = newLeft + 'px';
+        wrapper.style.top = newTop + 'px';
+        wrapper.style.right = 'auto';
+        wrapper.style.bottom = 'auto';
+        if (e.cancelable) e.preventDefault();
+      }
+
+      function onEnd() {
+        if (!layoutMode) return;
+        isDragging = false;
+        wrapper.style.cursor = 'grab';
+        if (wrapper.style.left && wrapper.style.top) {
+          var leftVal = parseInt(wrapper.style.left, 10);
+          var topVal = parseInt(wrapper.style.top, 10);
+          if (!isNaN(leftVal) && !isNaN(topVal)) {
+            var k = getOrientationKeys();
+            localStorage.setItem(k.leftKey, leftVal);
+            localStorage.setItem(k.topKey, topVal);
+            forceSyncJoystick();
+          }
         }
+      }
 
-        function activate() {
-            if (active) return;
-            if (!audioCtx) {
-                const A = window.AudioContext || window.webkitAudioContext;
-                if (!A) return;
-                audioCtx = new A();
-                gainNode = audioCtx.createGain();
-                gainNode.gain.value = 0.52;
-                gainNode.connect(audioCtx.destination);
-                gunshotBuffer = createGunshotBuffer();
-            }
-            if (audioCtx.state === 'running') active = true;
-            else audioCtx.resume().then(() => active = true).catch(() => {});
+      // mousedown 在 wrapper 上
+      wrapper.addEventListener('mousedown', onStart);
+      // mousemove/mouseup 在 document 上
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onEnd);
+      // touch 事件：仅在布局模式下阻止默认行为，非布局模式用 passive
+      wrapper.addEventListener('touchstart', onStart, { passive: false });
+      document.addEventListener('touchmove', onMove, { passive: false });
+      document.addEventListener('touchend', onEnd, { passive: true });
+
+      wrapper.addEventListener('dblclick', function(e) {
+        if (!layoutMode) return;
+        doReset();
+      });
+
+      function doReset() {
+        wrapper.style.left = '';
+        wrapper.style.top = '';
+        wrapper.style.right = '';
+        wrapper.style.bottom = '';
+        wrapper.style.position = '';
+        isDragging = false;
+        if (layoutMode) {
+          wrapper.style.outline = '2px dashed #fbbf24';
+        } else {
+          wrapper.style.outline = '';
         }
+        var k = getOrientationKeys();
+        localStorage.removeItem(k.leftKey);
+        localStorage.removeItem(k.topKey);
+        localStorage.removeItem('joystick_left');
+        localStorage.removeItem('joystick_top');
+        forceSyncJoystick();
+      }
 
-        let lastAmmo = null;
-        function observeAmmo() {
-            const el = document.getElementById('ammo');
-            if (!el) { setTimeout(observeAmmo, 300); return; }
-            const getAmmo = () => {
-                const m = (el.textContent || el.innerText).match(/^(\d+)\//);
-                return m ? parseInt(m[1], 10) : null;
-            };
-            lastAmmo = getAmmo();
-            new MutationObserver(() => {
-                const cur = getAmmo();
-                if (cur !== null && lastAmmo !== null && cur < lastAmmo) playGunshot();
-                lastAmmo = cur;
-            }).observe(el, { childList: true, characterData: true, subtree: true, attributes: true });
+      function toggleLayoutMode() {
+        layoutMode = !layoutMode;
+        updateVisuals();
+        forceSyncJoystick();
+      }
+
+      toggleBtn.addEventListener('click', toggleLayoutMode);
+      resetBtn.addEventListener('click', doReset);
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'l' || e.key === 'L') {
+          toggleLayoutMode();
+          if (e.cancelable) e.preventDefault();
         }
+      });
 
-        function bindActivation() {
-            const sel = ['#fire-button', '#reload-button', '#equip-button', '#aim-button', '#btn-jump', '#btn-crouch', '#btn-prone', '#joystick-base', '#canvas', '#sky-toggle', '#perf-toggle', '#edit-toggle', '#toggle-panel', '#fullscreen-toggle'];
-            const once = () => {
-                activate();
-                sel.forEach(s => { let e = document.querySelector(s); e && (e.removeEventListener('touchstart', once), e.removeEventListener('mousedown', once)); });
-                document.removeEventListener('touchstart', once);
-                document.removeEventListener('mousedown', once);
-            };
-            sel.forEach(s => { let e = document.querySelector(s); e && (e.addEventListener('touchstart', once, { passive: true }), e.addEventListener('mousedown', once)); });
-            document.addEventListener('touchstart', once, { passive: true });
-            document.addEventListener('mousedown', once);
+      // 横竖屏切换时自动同步摇杆位置
+      window.addEventListener('orientationchange', function() {
+        setTimeout(function() {
+          // 清除当前朝向的样式，恢复 CSS 默认定位
+          var k = getOrientationKeys();
+          var savedL = localStorage.getItem(k.leftKey);
+          var savedT = localStorage.getItem(k.topKey);
+          if (savedL !== null && savedT !== null) {
+            wrapper.style.position = 'fixed';
+            wrapper.style.left = savedL + 'px';
+            wrapper.style.top = savedT + 'px';
+            wrapper.style.right = 'auto';
+            wrapper.style.bottom = 'auto';
+          } else {
+            // 无保存位置时恢复 CSS 默认
+            wrapper.style.position = '';
+            wrapper.style.left = '';
+            wrapper.style.top = '';
+            wrapper.style.right = '';
+            wrapper.style.bottom = '';
+          }
+          forceSyncJoystick();
+        }, 200);
+      });
+
+      // 隐藏霓虹背景 + 启动加载同步
+      function initSync() {
+        if (startupBg) {
+          startupBg.classList.add('hidden');
+          setTimeout(function() {
+            startupBg.style.display = 'none';
+          }, 900);
         }
+        setTimeout(forceSyncJoystick, 100);
+        setTimeout(forceSyncJoystick, 500);
+      }
 
-        requestIdleCallback ? requestIdleCallback(() => { bindActivation(); observeAmmo(); }, { timeout: 2000 }) : setTimeout(() => { bindActivation(); observeAmmo(); }, 1500);
-    });
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        initSync();
+      } else {
+        document.addEventListener('DOMContentLoaded', initSync);
+      }
 
-    // 自动性能优化系统（延迟启动，不干扰首屏）
-    runWhenReady(() => {
-        const TARGET_FPS = 50;
-        const SAMPLE_INTERVAL_MS = 2000;
-        const LOW_FPS_COUNT_THRESHOLD = 3;
-        const HIGH_FPS_COUNT_THRESHOLD = 2;
-        const CHECK_DELAY_AFTER_CHANGE = 5000;
+      updateVisuals();
+    })();
+  </script>
 
-        let fpsSamples = [];
-        let lastFrameTime = performance.now();
-        let rafId = null;
-        let lowFpsStreak = 0;
-        let highFpsStreak = 0;
-        let lastModeChangeTime = 0;
-        let isPerformanceMode = false;
+  <!-- 音频系统 -->
+  <script src="engine/audio-system.js"></script>
 
-        function getCurrentMode() {
-            return localStorage.getItem('performance_mode') === 'true' || document.body.classList.contains('performance-mode');
-        }
+  <!-- Service Worker 注册（缓存 CDN 静态资源 + 本地 JS/CSS） -->
+  <script>
+  if ('serviceWorker' in navigator) {
+      // 使用 query string 版本号强制 SW 更新
+      var swVersion = 'v15';
+      navigator.serviceWorker.register('./sw.js?v=' + swVersion, { scope: './' })
+          .then(function(reg) {
+              console.log('[SW] 已注册，版本:', swVersion);
+              // 监听 SW 更新事件
+              reg.addEventListener('updatefound', function() {
+                  var newWorker = reg.installing;
+                  if (newWorker) {
+                      newWorker.addEventListener('statechange', function() {
+                          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                              console.log('[SW] 检测到新版本，正在激活...');
+                              // 通知新 SW 跳过等待
+                              newWorker.postMessage({ type: 'SKIP_WAITING' });
+                          }
+                      });
+                  }
+              });
+          })
+          .catch(function(err) {
+              console.warn('[SW] 注册失败:', err.message);
+          });
 
-        function setPerformanceMode(enable) {
-            if (enable === isPerformanceMode) return;
-            const now = Date.now();
-            if (now - lastModeChangeTime < CHECK_DELAY_AFTER_CHANGE) return;
-            isPerformanceMode = enable;
-            lastModeChangeTime = now;
-            localStorage.setItem('performance_mode', enable);
-            if (enable) document.body.classList.add('performance-mode');
-            else document.body.classList.remove('performance-mode');
-            const btn = document.getElementById('perf-toggle');
-            if (btn) enable ? btn.classList.add('active') : btn.classList.remove('active');
-        }
+      // 监听新 SW 接管，自动刷新页面
+      var refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', function() {
+          if (!refreshing) {
+              refreshing = true;
+              console.log('[SW] 控制器已更新，刷新页面加载新资源');
+              window.location.reload();
+          }
+      });
 
-        function frameCallback(now) {
-            const delta = Math.min(100, now - lastFrameTime);
-            if (delta > 0) {
-                const fps = 1000 / delta;
-                fpsSamples.push(fps);
-                if (fpsSamples.length > 60) fpsSamples.shift();
-            }
-            lastFrameTime = now;
-            rafId = requestAnimationFrame(frameCallback);
-        }
+      // 监听来自 SW 的消息
+      navigator.serviceWorker.addEventListener('message', function(event) {
+          if (event.data && event.data.type === 'SW_UPDATED') {
+              console.log('[SW] 已更新到版本:', event.data.version);
+          }
+      });
+  }
+  </script>
 
-        function analyzePerformance() {
-            if (fpsSamples.length === 0) {
-                setTimeout(analyzePerformance, SAMPLE_INTERVAL_MS);
-                return;
-            }
-            const avgFps = fpsSamples.reduce((a,b) => a + b, 0) / fpsSamples.length;
-            if (avgFps < TARGET_FPS) {
-                lowFpsStreak++;
-                highFpsStreak = 0;
-            } else {
-                highFpsStreak++;
-                lowFpsStreak = 0;
-            }
-            if (lowFpsStreak >= LOW_FPS_COUNT_THRESHOLD && !getCurrentMode()) setPerformanceMode(true);
-            else if (highFpsStreak >= HIGH_FPS_COUNT_THRESHOLD && getCurrentMode()) setPerformanceMode(false);
-            fpsSamples = [];
-            setTimeout(analyzePerformance, SAMPLE_INTERVAL_MS);
-        }
-
-        function bindManualToggle() {
-            const btn = document.getElementById('perf-toggle');
-            if (!btn) return;
-            const handler = () => {
-                lowFpsStreak = 0;
-                highFpsStreak = 0;
-                lastModeChangeTime = Date.now();
-                setTimeout(() => { lastModeChangeTime = 0; }, CHECK_DELAY_AFTER_CHANGE);
-            };
-            btn.addEventListener('click', handler);
-            btn.addEventListener('touchstart', handler);
-        }
-
-        function start() {
-            isPerformanceMode = getCurrentMode();
-            lastModeChangeTime = Date.now();
-            lastFrameTime = performance.now();
-            rafId = requestAnimationFrame(frameCallback);
-            setTimeout(analyzePerformance, 3000);
-            bindManualToggle();
-        }
-
-        requestIdleCallback ? requestIdleCallback(start, { timeout: 1000 }) : setTimeout(start, 1000);
-    });
-
-    // Service Worker 缓存（延迟注册，完全不影响首次加载关键资源）
-    runWhenReady(() => {
-        if ('serviceWorker' in navigator && !window._swRegistered) {
-            window._swRegistered = true;
-            const swCode = `const CACHE_NAME='ak12_cache_v6';const urlsToCache=['/','/style.css','/13.js','/a1.js','/a2.js','/a3.js','/a4.js','/a5.js','/a游戏.js','https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js','https://unpkg.com/comlink@4.4.1/dist/umd/comlink.min.js','https://image2url.com/r2/bucket1/images/1767924501264-882d54aa-2ff0-4d62-9a9a-a352455d8fba.jpg','https://image2url.com/r2/bucket2/images/1766739894913-d6018d51-9e56-4a5e-8c55-ae182f792e65.jpg','https://threejs.org/examples/textures/waternormals.jpg','https://cdn.jsdelivr.net/gh/4TiyinG/45@main/ak-12.glb','https://cdn.jsdelivr.net/gh/4TiyinG/45@main/Soldier.glb','https://cdn.jsdelivr.net/gh/4TiyinG/45@main/deng.glb','https://cdn.jsdelivr.net/gh/4TiyinG/45@main/hachune-miku-doll.glb','https://cdn.jsdelivr.net/gh/4TiyinG/45@main/guitar.glb'];self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(urlsToCache))));self.skipWaiting();self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));self.addEventListener('activate',e=>e.waitUntil(clients.claim()));`;
-            const blob = new Blob([swCode], { type: 'application/javascript' });
-            const swUrl = URL.createObjectURL(blob);
-            requestIdleCallback(() => {
-                navigator.serviceWorker.register(swUrl).then(() => setTimeout(() => URL.revokeObjectURL(swUrl), 1000)).catch(() => {});
-            }, { timeout: 2000 });
-        }
-    });
-})();
-</script>
+  <!-- 隐藏的视频播放元素（视频上传 input 改为惰性创建，避免手机端预加载冻结） -->
+  <video id="screen-video-player" style="display:none;" playsinline crossorigin="anonymous" preload="none"></video>
 </body>
 </html>
