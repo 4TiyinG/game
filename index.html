@@ -406,16 +406,7 @@
       }
     }, 1000); // 延迟 1 秒初始化，避免与首帧渲染竞争
 
-    // Service Worker 注册（HTTPS 或 localhost 才可用）
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('./sw.js').then(function(reg) {
-          console.log('[App] Service Worker 已注册');
-        }).catch(function(e) {
-          console.warn('[App] Service Worker 注册失败:', e);
-        });
-      });
-    }
+    // Service Worker 注册移至页面底部统一管理（避免重复注册）
   })();
   </script>
 
@@ -632,37 +623,45 @@
   <!-- Service Worker 注册（缓存 CDN 静态资源 + 本地 JS/CSS） -->
   <script>
   if ('serviceWorker' in navigator) {
-      // 使用 query string 版本号强制 SW 更新
-      var swVersion = 'v15';
-      navigator.serviceWorker.register('./sw.js?v=' + swVersion, { scope: './' })
-          .then(function(reg) {
-              console.log('[SW] 已注册，版本:', swVersion);
-              // 监听 SW 更新事件
-              reg.addEventListener('updatefound', function() {
-                  var newWorker = reg.installing;
-                  if (newWorker) {
-                      newWorker.addEventListener('statechange', function() {
-                          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                              console.log('[SW] 检测到新版本，正在激活...');
-                              // 通知新 SW 跳过等待
-                              newWorker.postMessage({ type: 'SKIP_WAITING' });
-                          }
-                      });
-                  }
+      // 不使用查询参数版本号（会导致每次访问都重新安装 SW，引发循环刷新）
+      // 版本管理通过 CACHE_NAME 在 sw.js 内部控制
+      window.addEventListener('load', function() {
+          navigator.serviceWorker.register('./sw.js', { scope: './' })
+              .then(function(reg) {
+                  console.log('[SW] 已注册');
+                  // 监听 SW 更新事件
+                  reg.addEventListener('updatefound', function() {
+                      var newWorker = reg.installing;
+                      if (newWorker) {
+                          newWorker.addEventListener('statechange', function() {
+                              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                  console.log('[SW] 检测到新版本，正在激活...');
+                                  newWorker.postMessage({ type: 'SKIP_WAITING' });
+                              }
+                          });
+                      }
+                  });
+              })
+              .catch(function(err) {
+                  console.warn('[SW] 注册失败:', err.message);
               });
-          })
-          .catch(function(err) {
-              console.warn('[SW] 注册失败:', err.message);
+
+          // 防止循环刷新：仅在新旧 CACHE_NAME 不同时才刷新
+          // 使用 sessionStorage 标记本次会话已刷新过，避免重复
+          var refreshing = false;
+          navigator.serviceWorker.addEventListener('controllerchange', function() {
+              if (!refreshing && !sessionStorage.getItem('sw-refreshed')) {
+                  refreshing = true;
+                  sessionStorage.setItem('sw-refreshed', '1');
+                  console.log('[SW] 控制器已更新，刷新页面加载新资源');
+                  window.location.reload();
+              }
           });
 
-      // 监听新 SW 接管，自动刷新页面
-      var refreshing = false;
-      navigator.serviceWorker.addEventListener('controllerchange', function() {
-          if (!refreshing) {
-              refreshing = true;
-              console.log('[SW] 控制器已更新，刷新页面加载新资源');
-              window.location.reload();
-          }
+          // 页面加载时清除上次会话的刷新标记（延迟清除，确保刷新已完成）
+          setTimeout(function() {
+              sessionStorage.removeItem('sw-refreshed');
+          }, 5000);
       });
 
       // 监听来自 SW 的消息
